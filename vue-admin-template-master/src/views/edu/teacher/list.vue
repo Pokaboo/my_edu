@@ -97,7 +97,7 @@ export default {
       teacherQuery: {} // 条件封装对象
     }
   },
-  // 页面渲染之前调用，一般调用methods中的方法
+  // 页面渲染之前调用，一般调用methods中的方法1
   created() {
     this.getTeacherListPage()
   },
