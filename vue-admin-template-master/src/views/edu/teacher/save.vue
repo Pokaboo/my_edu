@@ -88,12 +88,12 @@ export default {
         level: 1,
         career: "",
         intro: "",
-        avatar: 'assets/404_images/default.jpg'
+        avatar: process.env.OSS_PATH +'/avatar/default.jpg'
       },
-      imagecropperShow: false, // 上传头像弹窗默认不显示
-      imagecropperKey: 0, //上传组件key值
+      imagecropperShow: false,        // 上传头像弹窗默认不显示
+      imagecropperKey: 0,             //上传组件key值
       BASE_API: process.env.BASE_API, //获取dev.env.js中的ip和端口号
-      saveBtnDisabled: false // 保存按钮是否禁用
+      saveBtnDisabled: false          // 保存按钮是否禁用
     };
   },
   // 监听
@@ -115,7 +115,9 @@ export default {
       } else {
         // 使用对象拓展运算符，拷贝对象，而不是引用，
         // 否则新增一条记录后，defaultForm就变成了之前新增的teacher的值
-        this.teacher = {};
+        this.teacher = {
+          avatar: process.env.OSS_PATH +'/avatar/default.jpg'
+        };
       }
     },
 
