@@ -2,8 +2,9 @@
   <div class="app-container">
     <el-form label-width="120px">
       <el-form-item label="信息描述">
-        <el-button :plain="true" size="medium" @click="explainExcel">excel模版说明</el-button>
-        <!-- <el-tag type="info">excel模版说明</el-tag> -->
+        <el-button :plain="true" size="medium" @click="explainExcel"
+          >excel模版说明</el-button
+        >
         <el-tag>
           <i class="el-icon-download" />
           <a
@@ -52,9 +53,9 @@ export default {
       OSS_PATH: process.env.OSS_PATH, // 阿里云OSS地址
       fileUploadBtnText: "上传到服务器", // 按钮文字
       importBtnDisabled: false, // 按钮是否禁用,
-      
+
       loading: false
-    }
+    };
   },
   methods: {
     submitUpload() {
@@ -73,7 +74,8 @@ export default {
         this.$message({
           type: "success",
           message: "课程分类导入成功"
-        })
+        });
+        this.$router.push({ path: "/subject/list" });
       }
     },
     // 上传失败
@@ -83,13 +85,12 @@ export default {
       this.$message({
         type: "success",
         message: "课程分类导入失败"
-      })
+      });
     },
     // excel模板说明
-    explainExcel(){
-      this.$message('请先下载模板录入课程分类后导入Excel');
+    explainExcel() {
+      this.$message("请先下载模板录入课程分类后导入Excel");
     }
   }
-  
-}
+};
 </script>
