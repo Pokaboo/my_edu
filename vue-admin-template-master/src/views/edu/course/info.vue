@@ -46,7 +46,8 @@
           />
         </el-select>
       </el-form-item>
-      <!-- 课程讲师 TODO -->
+      
+      <!-- 课程讲师  -->
       <el-form-item label="课程讲师">
         <el-select v-model="courseInfo.teacherId" placeholder="请选择">
           <el-option
@@ -67,12 +68,23 @@
         />
       </el-form-item>
 
-      <!-- 课程简介 TODO -->
+      <!-- 课程简介-->
       <el-form-item label="课程简介">
-        <el-input v-model="courseInfo.description" :rows="5" type="textarea" />
+          <tinymce :height="300" v-model="courseInfo.description"/>
       </el-form-item>
 
-      <!-- 课程封面 TODO -->
+      <!-- 课程封面 -->
+      <el-form-item label="课程封面">
+        <el-upload
+          :show-file-list="false"
+          :on-success="handleAvatarSuccess"
+          :before-upload="beforeAvatarUpload"
+          :action="BASE_API + '/eduoss/fileoss/upload'"
+          class="avatar-uploader"
+        >
+          <img :src="courseInfo.cover" />
+        </el-upload>
+      </el-form-item>
 
       <el-form-item label="课程价格">
         <el-input-number
@@ -98,25 +110,33 @@
 <script>
 import course from "@/api/edu/course";
 import subject from "@/api/edu/subject";
+// 引入头像上传组件
+import ImageCropper from "@/components/ImageCropper";
+import PanThumb from "@/components/PanThumb";
+// 富文本组件
+import Tinymce from '@/components/Tinymce';
 
 const defaultForm = {
   title: "",
   subjectId: "",
+  subjectParentId: "",
   teacherId: "",
   lessonNum: 0,
   description: "",
-  cover: "",
-  price: 0
+  price: 0,
+  cover: process.env.OSS_PATH + "/avatar/bug.png"
 };
 
 export default {
+  components: { Tinymce },
   data() {
     return {
       courseInfo: defaultForm,
       saveBtnDisabled: false, // 保存按钮是否禁用
       teacherList: [],
       subjectOneList: [],
-      subjectTwoList: []
+      subjectTwoList: [],
+      BASE_API: process.env.BASE_API //获取dev.env.js中的ip和端口号
     };
   },
 
@@ -126,6 +146,25 @@ export default {
   },
 
   methods: {
+    // 上传头像回调函数
+    handleAvatarSuccess(res, file) {
+      console.log(res); // 上传响应
+      console.log(URL.createObjectURL(file.raw)); // base64编码
+      this.courseInfo.cover = res.data.url;
+    },
+
+    beforeAvatarUpload(file) {
+      const isJPG = file.type === "image/jpeg";
+      const isLt2M = file.size / 1024 / 1024 < 2;
+
+      if (!isJPG) {
+        this.$message.error("上传头像图片只能是 JPG 格式!");
+      }
+      if (!isLt2M) {
+        this.$message.error("上传头像图片大小不能超过 2MB!");
+      }
+      return isJPG && isLt2M;
+    },
     // 课程分类二级联动
     subjectLevelOneChanged(value) {
       for (let index = 0; index < this.subjectOneList.length; index++) {
@@ -187,4 +226,11 @@ export default {
     }
   }
 };
+
 </script>
+
+<style scoped>
+.tinymce-container {
+  line-height: 29px;
+}
+</style>
