@@ -46,7 +46,7 @@
           />
         </el-select>
       </el-form-item>
-      
+
       <!-- 课程讲师  -->
       <el-form-item label="课程讲师">
         <el-select v-model="courseInfo.teacherId" placeholder="请选择">
@@ -70,7 +70,7 @@
 
       <!-- 课程简介-->
       <el-form-item label="课程简介">
-          <tinymce :height="300" v-model="courseInfo.description"/>
+        <tinymce :height="300" v-model="courseInfo.description" />
       </el-form-item>
 
       <!-- 课程封面 -->
@@ -114,7 +114,7 @@ import subject from "@/api/edu/subject";
 import ImageCropper from "@/components/ImageCropper";
 import PanThumb from "@/components/PanThumb";
 // 富文本组件
-import Tinymce from '@/components/Tinymce';
+import Tinymce from "@/components/Tinymce";
 
 const defaultForm = {
   title: "",
@@ -128,7 +128,7 @@ const defaultForm = {
 };
 
 export default {
-  components: { Tinymce },
+  components: { Tinymce }, // 引入富文本组件
   data() {
     return {
       courseInfo: defaultForm,
@@ -136,16 +136,53 @@ export default {
       teacherList: [],
       subjectOneList: [],
       subjectTwoList: [],
-      BASE_API: process.env.BASE_API //获取dev.env.js中的ip和端口号
+      BASE_API: process.env.BASE_API, //获取dev.env.js中的ip和端口号
+      courseId: ""
     };
   },
 
   created() {
-    this.findAllEduTeacher();
-    this.getAllSubject();
+    if (this.$route.params && this.$route.params.id) {
+      this.courseId = this.$route.params.id;
+      this.findCourseInfoById();
+      this.findAllEduTeacher();
+    } else {
+      this.courseInfo = {
+        cover: process.env.OSS_PATH + "/avatar/bug.png"
+      };
+      this.findAllEduTeacher();
+      this.getAllSubject();
+    }
   },
 
   methods: {
+    findCourseInfoById() {
+      course
+        .findCourseInfoById(this.courseId)
+        .then(response => {
+          this.courseInfo = response.data.courseInfo;
+          subject.getAllSubject().then(response => {
+            this.subjectOneList = response.data.subjects;
+            for (var index = 0; index < this.subjectOneList.length; index++) {
+              if (
+                this.courseInfo.subjectParentId ==
+                this.subjectOneList[index].id
+              ) {
+                this.subjectTwoList = this.subjectOneList[index].children;
+              }
+            }
+          });
+           //初始化所有讲师
+          this.findAllEduTeacher()
+        })
+        .catch(response => {
+          this.$message({
+            type: "error",
+            message: "系统异常!"
+          });
+        });
+    },
+
     // 上传头像回调函数
     handleAvatarSuccess(res, file) {
       console.log(res); // 上传响应
@@ -226,7 +263,6 @@ export default {
     }
   }
 };
-
 </script>
 
 <style scoped>

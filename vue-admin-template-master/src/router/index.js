@@ -48,13 +48,13 @@ export const constantRouterMap = [
         path: 'table',
         name: '讲师列表',
         component: () => import('@/views/edu/teacher/list'),
-        meta: { title: '讲师列表', icon: 'table' }
+        meta: { title: '讲师列表', icon: 'list' }
       },
       {
         path: 'save',
         name: '添加讲师',
         component: () => import('@/views/edu/teacher/save'),
-        meta: { title: '添加讲师', icon: 'tree' }
+        meta: { title: '添加讲师', icon: 'teacher' }
       },
       {
         // ：id 隐藏路由传参
