@@ -156,24 +156,26 @@ export default {
   },
 
   methods: {
+    // 根据id获取课程信息，用于数据回显示
     findCourseInfoById() {
       course
         .findCourseInfoById(this.courseId)
         .then(response => {
           this.courseInfo = response.data.courseInfo;
+          // 点击上一步回到课程信息添加时，课程分类级联的二级分类默认为空此时需要赋值
           subject.getAllSubject().then(response => {
             this.subjectOneList = response.data.subjects;
             for (var index = 0; index < this.subjectOneList.length; index++) {
+              // 根据一级分类id判断
               if (
-                this.courseInfo.subjectParentId ==
-                this.subjectOneList[index].id
+                this.courseInfo.subjectParentId == this.subjectOneList[index].id
               ) {
                 this.subjectTwoList = this.subjectOneList[index].children;
               }
             }
           });
-           //初始化所有讲师
-          this.findAllEduTeacher()
+          //初始化所有讲师
+          this.findAllEduTeacher();
         })
         .catch(response => {
           this.$message({
@@ -241,14 +243,14 @@ export default {
         });
     },
 
-    // 保存并且下一步
-    saveOrUpdate() {
+    // 新增课程信息
+    addCourse() {
       course
         .addCourseInfo(this.courseInfo)
         .then(response => {
           this.$message({
             type: "success",
-            message: "保存成功!"
+            message: "新增课程信息成功!"
           });
           this.$router.push({
             path: "/course/chapter/" + response.data.courseId
@@ -257,9 +259,39 @@ export default {
         .catch(response => {
           this.$message({
             type: "error",
-            message: "保存失败!"
+            message: "新增课程信息失败!"
           });
         });
+    },
+
+    // 更新课程信息
+    updateCourse() {
+      course
+        .updateCourseInfo(this.courseInfo)
+        .then(response => {
+          this.$message({
+            type: "success",
+            message: "修改课程信息成功!"
+          });
+          this.$router.push({
+            path: "/course/chapter/" + this.courseId
+          });
+        })
+        .catch(response => {
+          this.$message({
+            type: "error",
+            message: "修改课程信息失败!"
+          });
+        });
+    },
+
+    // 保存并且下一步
+    saveOrUpdate() {
+      if (!this.courseInfo.id) {
+        this.addCourse();
+      } else {
+        this.updateCourse();
+      }
     }
   }
 };

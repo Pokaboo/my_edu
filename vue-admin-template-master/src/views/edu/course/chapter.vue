@@ -13,7 +13,9 @@
       <el-step title="提交审核" />
     </el-steps>
 
-    <el-button type="text">添加章节</el-button>
+    <el-button type="text" @click="dialogChapterFormVisible = true"
+      >添加章节</el-button
+    >
     <!-- 章节 -->
     <ul class="chanpterList">
       <li v-for="chapter in chapterList" :key="chapter.id">
@@ -47,6 +49,25 @@
         >下一步</el-button
       >
     </div>
+    <!-- 添加和修改章节表单 -->
+    <el-dialog :visible.sync="dialogChapterFormVisible" title="添加章节">
+      <el-form :model="chapter" label-width="120px">
+        <el-form-item label="章节标题">
+          <el-input v-model="chapter.title" />
+        </el-form-item>
+        <el-form-item label="章节排序">
+          <el-input-number
+            v-model="chapter.sort"
+            :min="0"
+            controls-position="right"
+          />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogChapterFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="saveOrUpdate">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -57,7 +78,12 @@ export default {
     return {
       saveBtnDisabled: false, // 保存按钮是否禁用
       chapterList: [],
-      courseId: ""
+      courseId: "",
+      dialogChapterFormVisible: false,
+      chapter: {
+        title: "",
+        sort: 0
+      }
     };
   },
 
@@ -66,9 +92,63 @@ export default {
       this.courseId = this.$route.params.id;
       this.findAllChapterInfo();
     }
+    this.chapter = {
+      title: "",
+      sort: 0
+    };
   },
 
   methods: {
+    // 保存或者修改章节信息
+    saveOrUpdate() {
+      this.saveBtnDisabled = true;
+      if (!this.chapter.id) {
+        this.addChapter();
+      } else {
+        this.updateData();
+      }
+    },
+    // 修改章节信息
+    updateData() {
+      chapter
+        .updateData(this.chapter)
+        .then(response => {
+          this.dialogChapterFormVisible = false;
+          this.$message({
+            type: "success",
+            message: "修改成功!"
+          });
+          this.findAllChapterInfo();
+        })
+        .catch(response => {
+          this.$message({
+            type: "error",
+            message: "修改失败!"
+          });
+        });
+    },
+
+    // 新增章节信息
+    addChapter() {
+      this.chapter.courseId = this.courseId
+      chapter
+        .addChapter(this.chapter)
+        .then(response => {
+          this.dialogChapterFormVisible = false;
+          this.$message({
+            type: "success",
+            message: "添加成功!"
+          });
+          this.findAllChapterInfo();
+        })
+        .catch(response => {
+          this.$message({
+            type: "error",
+            message: "添加失败!"
+          });
+        });
+    },
+
     // 获取所有的章节和小节信息
     findAllChapterInfo() {
       chapter
@@ -87,7 +167,7 @@ export default {
     // 上一步
     previous() {
       console.log("previous");
-      this.$router.push({ path: "/course/info/"+this.courseId });
+      this.$router.push({ path: "/course/info/" + this.courseId });
     },
     //下一步
     next() {
