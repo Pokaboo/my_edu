@@ -38,7 +38,7 @@ export default {
   // 删除章节
   deleteChapter(chapterId) {
     return request({
-      url: `/eduservice/chapter/deleteChapter/${chapterId}`,
+      url: `/eduservice/chapter/${chapterId}`,
       method: "delete"
     });
   }
