@@ -31,5 +31,32 @@ export default {
       method: "post",
       data: courseInfo
     });
-  }
+  },
+  findCoursePublishInfo(courseId) {
+    return request({
+      url: `/eduservice/course/findCoursePublishInfo/${courseId}`,
+      method: "get"
+    });
+  },
+  publishCourse(courseId) {
+    return request({
+      url: `/eduservice/course/publishCourse/${courseId}`,
+      method: "post"
+    });
+  },
+  // 根据条件获取课程列表
+  pageQuery(current, limit, courseQuery) {
+    return request({
+      url: `/eduservice/course/pageQuery/${current}/${limit}`,
+      method: 'post',
+      data: courseQuery
+    })
+  },
+  removeCourse(courseId){
+    return request({
+      url: `/eduservice/course/removeCourse/${courseId}`,
+      method: "delete"
+    });
+  },
+  
 };

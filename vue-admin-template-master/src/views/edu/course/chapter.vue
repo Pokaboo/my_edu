@@ -307,7 +307,7 @@ export default {
 
     // 保存或者修改章节信息
     saveOrUpdate() {
-      this.saveBtnDisabled = true;
+      this.saveBtnDisabled = false
       if (!this.chapter.id) {
         this.addChapter();
       } else {
