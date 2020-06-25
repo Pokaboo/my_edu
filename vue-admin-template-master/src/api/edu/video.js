@@ -31,5 +31,12 @@ export default {
       url: `/eduservice/video/findEduVideo/${id}`,
       method: "get"
     });
+  },
+  // 删除视频
+  removeVideo(id) {
+    return request({
+      url: `/eduvod/video/removeVideo/${id}`,
+      method: "delete"
+    });
   }
 };

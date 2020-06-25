@@ -97,7 +97,28 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item label="上传视频">
-          <!-- TODO -->
+          <el-upload
+            :on-success="handleVodUploadSuccess"
+            :on-remove="handleVodRemove"
+            :before-remove="beforeVodRemove"
+            :on-exceed="handleUploadExceed"
+            :file-list="fileList"
+            :action="BASE_API + '/eduvod/video/uploadVideo'"
+            :limit="1"
+            class="upload-demo"
+          >
+            <el-button size="small" type="primary">上传视频</el-button>
+            <el-tooltip placement="right-end">
+              <div slot="content">
+                最大支持1G，<br />
+                支持3GP、ASF、AVI、DAT、DV、FLV、F4V、<br />
+                GIF、M2T、M4V、MJ2、MJPEG、MKV、MOV、MP4、<br />
+                MPE、MPG、MPEG、MTS、OGG、QT、RM、RMVB、<br />
+                SWF、TS、VOB、WMV、WEBM 等视频格式上传
+              </div>
+              <i class="el-icon-question" />
+            </el-tooltip>
+          </el-upload>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -129,15 +150,18 @@ export default {
         sort: 0
       },
       dialogVideoFormVisible: false, // 是否显示课时表单
-      saveVideoBtnDisabled:false,
+      saveVideoBtnDisabled: false,
       chapterId: "", // 课时所在的章节id
       video: {
         // 课时对象
         title: "",
         sort: 0,
         free: 0,
-        videoSourceId: ""
-      }
+        videoSourceId: "",
+        videoOriginalName: ""
+      },
+      fileList: [], //上传文件列表
+      BASE_API: process.env.BASE_API // 接口API地址
     };
   },
 
@@ -153,22 +177,50 @@ export default {
   },
 
   methods: {
+    // *******************************视频管理****************************
+    // 删除前调用
+    beforeVodRemove(file, fileList) {
+      return this.$confirm(`确定移除 ${file.name}？`);
+    },
+    // 删除时调用
+    handleVodRemove(file, fileList) {
+      video.removeById(this.video.videoSourceId).then(response => {
+        this.$message({
+          type: "success",
+          message: "删除成功"
+        });
+        this.fileList = [];
+        this.video.videoSourceId = "";
+        this.video.videoOriginalName = "";
+      });
+    },
+
+    //成功回调
+    handleVodUploadSuccess(response, file, fileList) {
+      this.video.videoSourceId = response.data.videoId;
+      this.video.videoOriginalName = file.name;
+    },
+    //视图上传多于一个视频
+    handleUploadExceed(files, fileList) {
+      this.$message.warning("想要重新上传视频，请先删除已上传的视频");
+    },
     // *******************************课时信息管理****************************
     // 添加课时弹框
     openVideoDialog(chapterId) {
-      this.saveVideoBtnDisabled = false
+      this.saveVideoBtnDisabled = false;
       this.dialogVideoFormVisible = true;
       this.video = {
         title: "",
         sort: 0,
         free: 0,
-        videoSourceId: ""
+        videoSourceId: "",
+        videoOriginalName:""
       };
-      this.video.chapterId = chapterId
+      this.video.chapterId = chapterId;
     },
     // 新增课时信息
     saveVideo() {
-      this.video.courseId = this.courseId
+      this.video.courseId = this.courseId;
       video
         .saveVideo(this.video)
         .then(response => {
@@ -176,7 +228,7 @@ export default {
             type: "success",
             message: "添加课时成功!"
           });
-          this.dialogVideoFormVisible = false
+          this.dialogVideoFormVisible = false;
           this.findAllChapterInfo();
         })
         .catch(response => {
@@ -192,6 +244,7 @@ export default {
       this.dialogVideoFormVisible = true;
       video.findEduVideo(id).then(response => {
         this.video = response.data.video;
+        this.fileList = [{'name': this.video.videoOriginalName}]
       });
     },
 
@@ -204,7 +257,7 @@ export default {
             type: "success",
             message: "修改课时成功!"
           });
-          this.dialogVideoFormVisible = false
+          this.dialogVideoFormVisible = false;
           this.findAllChapterInfo();
         })
         .catch(response => {
@@ -307,7 +360,7 @@ export default {
 
     // 保存或者修改章节信息
     saveOrUpdate() {
-      this.saveBtnDisabled = false
+      this.saveBtnDisabled = false;
       if (!this.chapter.id) {
         this.addChapter();
       } else {
