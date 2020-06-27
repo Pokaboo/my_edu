@@ -468,6 +468,9 @@ export default {
         pagination: {
           el: '.swiper-pagination'//分页的dom节点
         },
+        loop: true,
+        speed: 5000,
+        autoplay : true,
         //配置导航
         navigation: {
           nextEl: '.swiper-button-next',//下一页dom节点
