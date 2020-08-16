@@ -28,37 +28,39 @@
           </ul>
           <!-- / nav -->
           <ul class="h-r-login">
-            <li id="no-login">
-              <a href="/sing_in" title="登录">
+            <li v-if="!loginInfo.id" id="no-login">
+              <a href="/login" title="登录">
                 <em class="icon18 login-icon">&nbsp;</em>
                 <span class="vam ml5">登录</span>
               </a>
               |
-              <a href="/sign_up" title="注册">
+              <a href="/register" title="注册">
                 <span class="vam ml5">注册</span>
               </a>
             </li>
-            <li class="mr10 undis" id="is-login-one">
-              <a href="#" title="消息" id="headerMsgCountId">
+            <li v-if="loginInfo.id" id="is-login-one" class="mr10">
+              <a id="headerMsgCountId" href="#" title="消息">
                 <em class="icon18 news-icon">&nbsp;</em>
               </a>
               <q class="red-point" style="display: none">&nbsp;</q>
             </li>
-            <li class="h-r-user undis" id="is-login-two">
-              <a href="#" title>
+            <li v-if="loginInfo.id" id="is-login-two" class="h-r-user">
+              <a href="/ucenter" title>
                 <img
-                  src="~/assets/img/avatar-boy.gif"
+                  :src="loginInfo.avatar"
                   width="30"
                   height="30"
                   class="vam picImg"
                   alt
                 />
-                <span class="vam disIb" id="userName"></span>
+                <span id="userName" class="vam disIb">{{
+                  loginInfo.nickname
+                }}</span>
               </a>
               <a
-                href="javascript:void(0)"
+                href="javascript:void(0);"
                 title="退出"
-                onclick="exit();"
+                @click="logout()"
                 class="ml5"
                 >退出</a
               >
@@ -100,7 +102,10 @@
           </h4>
           <ul class="of flink-list">
             <li>
-              <a href="https://github.com/Pokaboo" title="Pokaboo" target="_blank"
+              <a
+                href="https://github.com/Pokaboo"
+                title="Pokaboo"
+                target="_blank"
                 >Pokaboo</a
               >
             </li>
@@ -115,8 +120,8 @@
                 <a href="#" title="联系我们" target="_blank">联系我们</a>|
                 <a href="#" title="帮助中心" target="_blank">帮助中心</a>|
                 <a href="#" title="资源下载" target="_blank">资源下载</a>|
-                <span>服务热线：010-56253825(北京) 0755-85293825(深圳)</span>
-                <span>Email：info@atguigu.com</span>
+                <span>服务热线：xxxxxxxxxxx</span>
+                <span>Email：pokaboo@163.com</span>
               </section>
               <section class="b-f-link mt10">
                 <span>©2018课程版权均归Pokaboo所有 京ICP备17055252号</span>
@@ -148,5 +153,45 @@ import "~/assets/css/theme.css";
 import "~/assets/css/global.css";
 import "~/assets/css/web.css";
 
-export default {};
+import cookie from "js-cookie";
+
+export default {
+  data() {
+    return {
+      token: "",
+      loginInfo: {
+        id: "",
+        age: "",
+        avatar: "",
+        mobile: "",
+        nickname: "",
+        sex: ""
+      }
+    };
+  },
+
+  created() {
+    this.showInfo();
+  },
+
+  methods: {
+    showInfo() {
+      //debugger
+      var jsonStr = cookie.get("myedu_ucenter");
+      //alert(jsonStr)
+      if (jsonStr) {
+        this.loginInfo = JSON.parse(jsonStr);
+      }
+    },
+
+    logout() {
+      //debugger
+      cookie.set("myedu_ucenter", "", { domain: "localhost" });
+      cookie.set("myedu_token", "", { domain: "localhost" });
+
+      //跳转页面
+      window.location.href = "/";
+    }
+  }
+};
 </script>
