@@ -116,7 +116,7 @@
           <section class="fl col-7"> 
             <section class="mr20">
               <section class="b-f-link">
-                <a href="#" title="关于asd我们" target="_blank">关于我们</a>|
+                <a href="#" title="关于我们" target="_blank">关于我们</a>|
                 <a href="#" title="联系我们" target="_blank">联系我们</a>|
                 <a href="#" title="帮助中心" target="_blank">帮助中心</a>|
                 <a href="#" title="资源下载" target="_blank">资源下载</a>|
@@ -154,6 +154,7 @@ import "~/assets/css/global.css";
 import "~/assets/css/web.css";
 
 import cookie from "js-cookie";
+import loginApi from "@/api/login";
 
 export default {
   data() {
@@ -171,10 +172,27 @@ export default {
   },
 
   created() {
+    //获取路径中的token
+    this.token = this.$route.query.token
+    if (this.token) {
+      this.wxLogin()
+    }
     this.showInfo();
   },
 
   methods: {
+    wxLogin() {
+      if (this.token == '') return
+      //把token存在cookie中、也可以放在localStorage中
+      cookie.set('myedu_token', this.token, {domain: 'localhost'})
+      cookie.set('myedu_ucenter', '', {domain: 'localhost'})
+      //登录成功根据token获取用户信息
+      loginApi.getLoginInfo().then(response => {
+        this.loginInfo = response.data.data.item
+        //将用户信息记录cookie
+        cookie.set('myedu_ucenter', this.loginInfo, {domain: 'localhost'})
+      })
+    },
     showInfo() {
       //debugger
       var jsonStr = cookie.get("myedu_ucenter");

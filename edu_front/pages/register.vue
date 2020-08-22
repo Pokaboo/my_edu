@@ -114,7 +114,7 @@
               id="weixin"
               class="weixin"
               target="_blank"
-              href="http://huaan.free.idcfengye.com/api/ucenter/wx/login"
+              href="http://localhost:9001/api/ucenter/wx/login"
               ><i class="iconfont icon-weixin"
             /></a>
           </li>
