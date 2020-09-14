@@ -150,9 +150,9 @@ export const constantRouterMap = [
         },
         {
           path: 'show',
-          name: '数据展示',
+          name: '图形显示',
           component: () => import('@/views/sta/show'),
-          meta: { title: '数据展示', icon: 'table' }
+          meta: { title: '图形显示', icon: 'table' }
         }
       ]
     },
